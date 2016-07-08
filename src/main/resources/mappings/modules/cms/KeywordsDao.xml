@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jee.site.modules.cms.dao.KeywordsDao">
+    
+	<sql id="keywordsColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.first_relation_key AS "firstRelationKey",
+		a.second_relation_key AS "secondRelationKey",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="keywordsJoins">
+	</sql>
+    
+	<select id="get" resultType="Keywords">
+		SELECT 
+			<include refid="keywordsColumns"/>
+		FROM cms_keywords a
+		<include refid="keywordsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Keywords">
+		SELECT 
+			<include refid="keywordsColumns"/>
+		FROM cms_keywords a
+		<include refid="keywordsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			
+			<if test="count != null">
+				AND length(a.name)>${count} 
+					
+			</if>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="firstRelationKey != null and firstRelationKey != ''">
+				AND a.first_relation_key LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstRelationKey}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstRelationKey}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstRelationKey},'%')</if>
+			</if>
+			<if test="secondRelationKey != null and secondRelationKey != ''">
+				AND a.second_relation_key LIKE 
+					<if test="dbName == 'oracle'">'%'||#{secondRelationKey}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{secondRelationKey}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{secondRelationKey},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Keywords">
+		SELECT 
+			<include refid="keywordsColumns"/>
+		FROM cms_keywords a
+		<include refid="keywordsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_keywords(
+			id,
+			name,
+			first_relation_key,
+			second_relation_key,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{firstRelationKey},
+			#{secondRelationKey},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_keywords SET 	
+			name = #{name},
+			first_relation_key = #{firstRelationKey},
+			second_relation_key = #{secondRelationKey},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_keywords SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

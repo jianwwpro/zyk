@@ -1,0 +1,114 @@
+zset数据
+一、期刊类
+1. 期刊---版本
+	key : journal_list-(版本)
+	value: journal.id
+	score: 年*100 + 卷期
+
+2. 目录---期刊
+	key: journallist_journal-(期刊ID)
+	value: JounalList
+	score: sort
+
+
+二、文章类
+1. 文章---关联语种
+	key : article_list-language
+	value: article.id
+	score: article.language
+	
+2. 文章---栏目--推荐 (废弃)
+	key: article_tj_menu-栏目id
+	value article.id
+	score: article.recommend
+3. 文章---栏目---语种
+	key: article_menu-栏目id
+	value article.id
+	score: recomend+2099年.getTime() 或则 article.sendTime
+
+4. 文章---期刊--推荐
+	article_journal-期刊ID
+	value: article.id
+	score: 期刊推荐sort
+
+5. 相关文章
+	article_relation-标签ID
+	value:article.id
+	score: sendTime
+	
+6. 文章-----推荐
+	key: article_tj-语种
+	value article.id
+	score: article.recommend
+	
+7.文章----语种
+	key: article_lang-语种
+	value article.id
+	score: recomend+2099年.getTime() 或则 article.sendTime
+	
+三、博文
+1. 博文---语种
+	key: blog_list-语种
+	value:blog.id
+	score: updateDate
+2. 热门博主
+	key: bloger_list
+	value:user.id
+	score：积分数
+
+四、积分类、打分、收藏
+1. 积分记录
+	set
+	key: rewards_list-(user.id)
+	value: 业务类型+业务ID
+2. 打分记录
+	map
+	key: score-article.id
+	sub-key: user.id
+	value: score
+3. 收藏
+	zset
+	key: collect-user.id
+	value: article-article.id  ||  journal.journal.id || activty.id
+	score: new Date().getTime();
+
+2. 浏览记录
+	map
+	key: brow-count
+	sub-key: id
+	value: count
+
+五、活动公告信息类
+	zset
+	key:activity-类型
+	value: id
+	score: sendTime
+
+对象
+
+1.文章对象
+	hash
+	key: HbArticle-(id)
+	sub-key: article的字段
+	sub-value:article的值
+	
+2. 期刊目录对象
+	hash:
+	key: HbJournalList-(id)
+	sub-key: 字段
+	sub-value：值
+	
+3. 期刊对象
+	hash
+	key: HbJournal-(id)
+	sub-key: journal的字段
+	sub-value: journal的值
+	
+4.活动预告类
+	hash
+	key: HbActivity-id
+	sub-key :字段
+	value: 值
+	
+
+	

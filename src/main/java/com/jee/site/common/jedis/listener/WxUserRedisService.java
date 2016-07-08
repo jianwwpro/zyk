@@ -1,0 +1,56 @@
+package com.jee.site.common.jedis.listener;
+
+import org.springframework.stereotype.Component;
+
+import com.jee.site.common.jedis.JedisUtils;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPubSub;
+
+/**
+ * 
+ * @author 王建武
+ *
+ */
+@Component
+public class WxUserRedisService extends JedisPubSub {
+	
+	//微信关注用户存在redis数据库的key
+	public static final String WEIXIN_GZYH_KEY="wxUser";
+	
+	
+	
+	// 取得订阅的消息后的处理
+	public void onMessage(String channel, String message) {
+		//清除原来的关注用户
+		Jedis jedis = JedisUtils.getResource();
+		jedis.del(WEIXIN_GZYH_KEY.getBytes());
+		
+	}
+
+	// 初始化订阅时候的处理
+	public void onSubscribe(String channel, int subscribedChannels) {
+		System.out.println(channel + "=" + subscribedChannels);
+	}
+
+	// 取消订阅时候的处理
+	public void onUnsubscribe(String channel, int subscribedChannels) {
+		System.out.println(channel + "=" + subscribedChannels);
+	}
+
+	// 初始化按表达式的方式订阅时候的处理
+	public void onPSubscribe(String pattern, int subscribedChannels) {
+		System.out.println(pattern + "=" + subscribedChannels);
+	}
+
+	// 取消按表达式的方式订阅时候的处理
+	public void onPUnsubscribe(String pattern, int subscribedChannels) {
+		System.out.println(pattern + "=" + subscribedChannels);
+	}
+
+	// 取得按表达式的方式订阅的消息后的处理
+	public void onPMessage(String pattern, String channel, String message) {
+		System.out.println(pattern + "=" + channel + "=" + message);
+	}
+}
